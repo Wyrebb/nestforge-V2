@@ -1,0 +1,27 @@
+[package]
+name = "nestforge-engine"
+version = "1.0.0"
+edition = "2021"
+
+[[bin]]
+name = "nestforge-engine"
+path = "src/main.rs"
+
+[dependencies]
+actix-web    = "4"
+actix-cors   = "0.7"
+actix-files  = "0.6"
+tokio        = { version = "1", features = ["full"] }
+serde        = { version = "1", features = ["derive"] }
+serde_json   = "1"
+rayon        = "1"
+rand         = "0.8"
+env_logger   = "0.10"
+log          = "0.4"
+async-stream = "0.3"
+lazy_static  = "1"
+
+[profile.release]
+opt-level     = 3
+lto           = true
+codegen-units = 1
