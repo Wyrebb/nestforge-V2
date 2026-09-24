@@ -38,31 +38,32 @@ jobs:
           Copy-Item "target\release\nestforge-engine.exe" "dist\"
           Copy-Item "nestforge.html" "dist\"
 
-          $bat = "@echo off`r`ncd /d `"%~dp0`"`r`nstart `"`" `"http://localhost:5000`"`r`ntimeout /t 1 /nobreak >nul`r`nnestforge-engine.exe"
-          $bat | Out-File -FilePath "dist\NestForge.bat" -Encoding ASCII
+          $bat = "@echo off`r`ncd /d ""%~dp0""`r`nstart """" ""http://localhost:5000""`r`ntimeout /t 1 /nobreak >nul`r`nnestforge-engine.exe"
+          [System.IO.File]::WriteAllText("dist\NestForge.bat", $bat)
 
-          $ps1 = @'
-$exeDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$target  = Join-Path $exeDir "NestForge.bat"
-$desktop = [Environment]::GetFolderPath("Desktop")
-$lnkPath = Join-Path $desktop "NestForge.lnk"
-$ws = New-Object -ComObject WScript.Shell
-$s  = $ws.CreateShortcut($lnkPath)
-$s.TargetPath       = $target
-$s.WorkingDirectory = $exeDir
-$s.Description      = "NestForge - Logiciel de nesting DXF"
-$s.WindowStyle      = 7
-$s.Save()
-if (Test-Path $lnkPath) {
-    Write-Host "[OK] Raccourci NestForge cree sur le Bureau !"
-} else {
-    Write-Host "[ERREUR] Impossible de creer le raccourci."
-}
-Read-Host "Appuyez sur Entree pour fermer"
-'@
-          $ps1 | Out-File -FilePath "dist\create_shortcut.ps1" -Encoding UTF8
-          $bat2 = "@echo off`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%~dp0create_shortcut.ps1`""
-          $bat2 | Out-File -FilePath "dist\Creer_raccourci_bureau.bat" -Encoding ASCII
+          $lines = @(
+            '$exeDir = Split-Path -Parent $MyInvocation.MyCommand.Path',
+            '$target  = Join-Path $exeDir "NestForge.bat"',
+            '$desktop = [Environment]::GetFolderPath("Desktop")',
+            '$lnkPath = Join-Path $desktop "NestForge.lnk"',
+            '$ws = New-Object -ComObject WScript.Shell',
+            '$s  = $ws.CreateShortcut($lnkPath)',
+            '$s.TargetPath       = $target',
+            '$s.WorkingDirectory = $exeDir',
+            '$s.Description      = "NestForge - Logiciel de nesting DXF"',
+            '$s.WindowStyle      = 7',
+            '$s.Save()',
+            'if (Test-Path $lnkPath) {',
+            '    Write-Host "[OK] Raccourci NestForge cree sur le Bureau !"',
+            '} else {',
+            '    Write-Host "[ERREUR] Impossible de creer le raccourci."',
+            '}',
+            'Read-Host "Appuyez sur Entree pour fermer"'
+          )
+          $lines -join "`r`n" | Out-File -FilePath "dist\create_shortcut.ps1" -Encoding UTF8
+
+          $bat2 = "@echo off`r`npowershell -NoProfile -ExecutionPolicy Bypass -File ""%~dp0create_shortcut.ps1"""
+          [System.IO.File]::WriteAllText("dist\Creer_raccourci_bureau.bat", $bat2)
 
       - name: Zipper
         shell: powershell
@@ -82,15 +83,15 @@ Read-Host "Appuyez sur Entree pour fermer"
           name: NestForge v1.0.${{ github.run_number }}
           files: NestForge-Windows.zip
           body: |
-            ## NestForge — Logiciel de nesting DXF haute performance
+            ## NestForge - Logiciel de nesting DXF haute performance
 
-            ### Installation (une seule fois)
+            Installation (une seule fois)
             1. Telechargez NestForge-Windows.zip
-            2. Extrayez dans un dossier fixe (ex: C:\NestForge\)
+            2. Extrayez dans un dossier fixe ex C:\NestForge\
             3. Double-cliquez Creer_raccourci_bureau.bat
             4. Un raccourci NestForge apparait sur votre Bureau
 
-            ### Utilisation quotidienne
+            Utilisation quotidienne
             Double-cliquez le raccourci NestForge sur le Bureau
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
