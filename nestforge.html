@@ -10,9 +10,9 @@
   --bg:#0f0f0f;--bg2:#161616;--bg3:#1e1e1e;
   --border:#2a2a2a;--border2:#383838;
   --text:#e8e4dc;--text2:#8a8680;--text3:#444;
-  --accent:#c8f542;--accent2:#a8d82e;--adim:rgba(200,245,66,.12);
+  --accent:#2b8cf0;--accent2:#1a6fd4;--adim:rgba(43,140,240,.12);
   --danger:#ff5a4e;--info:#4ea8ff;--warn:#f5a623;
-  --c2:#a29bfe;--c3:#fd79a8;--c4:#c8f542;
+  --c2:#a29bfe;--c3:#fd79a8;--c4:#4ea8ff;
   --mono:'IBM Plex Mono',monospace;--sans:'Syne',sans-serif;
   --r:6px;--r2:10px;
 }
@@ -59,7 +59,7 @@ header{
 .sec h3{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:clamp(6px,1vh,12px);}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:clamp(4px,0.6vh,7px) clamp(8px,1vw,14px);border-radius:var(--r);border:1px solid var(--border2);background:transparent;color:var(--text);font-family:var(--mono);font-size:clamp(10px,1vw,12px);cursor:pointer;transition:background .15s;white-space:nowrap;}
 .btn:hover{background:var(--bg3);}
-.btn.pri{background:var(--accent);border-color:var(--accent);color:#0f0f0f;font-weight:500;}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#ffffff;font-weight:500;}
 .btn.pri:hover{background:var(--accent2);}
 .btn.dng{border-color:var(--danger);color:var(--danger);}
 .btn.dng:hover{background:rgba(255,90,78,.1);}
@@ -351,10 +351,10 @@ let pendingImport=null;
 // Pan state
 let panX=20, panY=20, isPanning=false, panStartX=0, panStartY=0;
 
-const COLORS=['#c8f542','#4ea8ff','#ff5a4e','#ffd166','#06d6a0','#a29bfe',
+const COLORS=['#2b8cf0','#4ea8ff','#ff5a4e','#ffd166','#06d6a0','#a29bfe',
               '#fd79a8','#74b9ff','#55efc4','#fab1a0','#e17055','#81ecec',
               '#fdcb6e','#6c5ce7','#00b894','#e84393'];
-const LCOL={2:'#a29bfe',3:'#fd79a8',4:'#c8f542'};
+const LCOL={2:'#a29bfe',3:'#fd79a8',4:'#4ea8ff'};
 
 // ═══════════════════════════════════════════════════════════════
 // GÉOMÉTRIE
@@ -1054,7 +1054,7 @@ function handleRustEvent(d,sw,sh){
         piece: fullPiece || {
           id:    pl.piece_id,
           name:  '?',
-          color: '#c8f542',
+          color: '#2b8cf0',
           layers:{2:[],3:[],4:[]},
           cuttingHull: pl.hull,
         }
@@ -1183,7 +1183,7 @@ function drawCanvas(){
 
   // Zone utile
   const m=parseFloat(document.getElementById('margin').value)||5;
-  ctx.strokeStyle='rgba(200,245,66,.2)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.strokeStyle='rgba(43,140,240,.2)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
   ctx.strokeRect(m*zoom,m*zoom,(sw-2*m)*zoom,(sh-2*m)*zoom);ctx.setLineDash([]);
 
   const pls=sheets[activeSheet]||[];
@@ -1203,15 +1203,15 @@ function drawCanvas(){
         ctx.moveTo(pts[0][0],pts[0][1]);
         for(let k=1;k<pts.length;k++) ctx.lineTo(pts[k][0],pts[k][1]);
         ctx.closePath();
-        ctx.fillStyle=(piece.color||'#c8f542')+'28';
+        ctx.fillStyle=(piece.color||'#2b8cf0')+'28';
         ctx.fill();
-        ctx.strokeStyle=piece.color||'#c8f542';
+        ctx.strokeStyle=piece.color||'#2b8cf0';
         ctx.lineWidth=1.4;
         ctx.stroke();
         // Label
         const bb=getBBox(pts);
         if(bb.maxX-bb.minX>40&&bb.maxY-bb.minY>18){
-          ctx.fillStyle=piece.color||'#c8f542';
+          ctx.fillStyle=piece.color||'#2b8cf0';
           ctx.textAlign='center';ctx.textBaseline='middle';
           ctx.font=`${Math.max(8,Math.min(11,(bb.maxY-bb.minY)*.18))}px IBM Plex Mono,monospace`;
           ctx.fillText((piece.name||'?').substring(0,14),(bb.minX+bb.maxX)/2,(bb.minY+bb.maxY)/2);
@@ -1429,7 +1429,7 @@ function exportSVG(){
       if(!hasLayers){
         // Mode Rust : hull déjà en coordonnées absolues
         const pstr=pl.hull.map(([x,y])=>`${x.toFixed(3)},${(y+oy).toFixed(3)}`).join(' ');
-        svg+=`<polygon points="${pstr}" fill="${(piece.color||'#c8f542')}28" stroke="${piece.color||'#c8f542'}" stroke-width=".5"/>\n`;
+        svg+=`<polygon points="${pstr}" fill="${(piece.color||'#2b8cf0')}28" stroke="${piece.color||'#2b8cf0'}" stroke-width=".5"/>\n`;
         // Calques 2/3 depuis données locales
         const localPiece=pieces.find(p=>p.id===pl.piece_id);
         if(localPiece&&pl.xf){
@@ -1528,7 +1528,7 @@ function renderPrev(pts,id){
   const b=getBBox(pts),w=b.maxX-b.minX||1,h=b.maxY-b.minY||1;
   const sc=Math.min(160/w,130/h);
   const sp=pts.map(([x,y])=>`${(x-b.minX)*sc+5},${(y-b.minY)*sc+5}`).join(' ');
-  document.getElementById(id).innerHTML=`<svg width="${w*sc+10}" height="${h*sc+10}"><polygon points="${sp}" fill="rgba(200,245,66,.15)" stroke="#c8f542" stroke-width="1.2"/></svg>`;
+  document.getElementById(id).innerHTML=`<svg width="${w*sc+10}" height="${h*sc+10}"><polygon points="${sp}" fill="rgba(43,140,240,.15)" stroke="#2b8cf0" stroke-width="1.2"/></svg>`;
 }
 function log(msg,type){
   const p=document.getElementById('logEl');
