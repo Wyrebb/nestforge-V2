@@ -106,9 +106,8 @@ async fn main()->std::io::Result<()>{
     println!("║  http://localhost:{}               ║",port);
     println!("║  CPU threads: {}                    ║",rayon::current_num_threads());
     println!("╚══════════════════════════════════════╝");
-    #[cfg(windows)] std::process::Command::new("cmd").args(["/c","start",&format!("http://localhost:{}",port)]).spawn().ok();
-    #[cfg(target_os="macos")] std::process::Command::new("open").arg(format!("http://localhost:{}",port)).spawn().ok();
-    #[cfg(target_os="linux")] std::process::Command::new("xdg-open").arg(format!("http://localhost:{}",port)).spawn().ok();
+    // Le navigateur est ouvert par NestForge.bat apres 2 secondes
+    // pour eviter la double page (Rust + bat)
     HttpServer::new(move||{
         App::new()
             .app_data(state.clone())
