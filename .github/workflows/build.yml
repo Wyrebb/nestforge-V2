@@ -37,19 +37,25 @@ jobs:
           New-Item -ItemType Directory -Force dist
           Copy-Item "target\release\nestforge-engine.exe" "dist\"
           Copy-Item "nestforge.html" "dist\"
+          Copy-Item "nestforge.ico" "dist\"
 
-          $bat = "@echo off`r`ncd /d ""%~dp0""`r`nstart """" ""http://localhost:5000""`r`ntimeout /t 1 /nobreak >nul`r`nnestforge-engine.exe"
+          # Lanceur : ouvre le navigateur APRES que le serveur est pret
+          # /b = sans fenetre cmd visible, puis ferme automatiquement
+          $bat = "@echo off`r`ncd /d ""%~dp0""`r`nstart /b nestforge-engine.exe`r`ntimeout /t 2 /nobreak >nul`r`nstart """" ""http://localhost:5000"""
           [System.IO.File]::WriteAllText("dist\NestForge.bat", $bat)
 
+          # Script raccourci avec icone
           $lines = @(
             '$exeDir = Split-Path -Parent $MyInvocation.MyCommand.Path',
             '$target  = Join-Path $exeDir "NestForge.bat"',
+            '$icon    = Join-Path $exeDir "nestforge.ico"',
             '$desktop = [Environment]::GetFolderPath("Desktop")',
             '$lnkPath = Join-Path $desktop "NestForge.lnk"',
             '$ws = New-Object -ComObject WScript.Shell',
             '$s  = $ws.CreateShortcut($lnkPath)',
             '$s.TargetPath       = $target',
             '$s.WorkingDirectory = $exeDir',
+            '$s.IconLocation     = "$icon,0"',
             '$s.Description      = "NestForge - Logiciel de nesting DXF"',
             '$s.WindowStyle      = 7',
             '$s.Save()',
@@ -89,7 +95,7 @@ jobs:
             1. Telechargez NestForge-Windows.zip
             2. Extrayez dans un dossier fixe ex C:\NestForge\
             3. Double-cliquez Creer_raccourci_bureau.bat
-            4. Un raccourci NestForge apparait sur votre Bureau
+            4. Un raccourci NestForge avec icone apparait sur votre Bureau
 
             Utilisation quotidienne
             Double-cliquez le raccourci NestForge sur le Bureau
